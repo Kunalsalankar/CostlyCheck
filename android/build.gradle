@@ -1,0 +1,47 @@
+buildscript {
+    ext.kotlin_version = '1.7.10'
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.1.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.3.15'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+
+    // Updated plugin configuration block
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            if (project.name == 'flutter_keyboard_visibility') {
+                project.android {
+                    namespace "com.jrai.flutter_keyboard_visibility"
+                }
+            } else if (project.name == 'cloud_firestore') {
+                project.android {
+                    namespace "io.flutter.plugins.firebase.firestore"
+                    compileSdkVersion 34
+                }
+            }
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
