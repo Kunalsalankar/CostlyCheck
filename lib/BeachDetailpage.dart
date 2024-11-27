@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'map.dart';
+import 'LocationScreen.dart';
+import 'Book.dart'; // Importing the Book page
 
 class BeachDetailPage extends StatefulWidget {
   final Map<String, dynamic> beach;
@@ -285,10 +286,7 @@ class _BeachDetailPageState extends State<BeachDetailPage> {
           () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => MapPage(
-                selectedBeach: widget.beach,
-                allBeaches: const [], // Pass empty list since we're focusing on selected beach
-              ),
+              builder: (context) => const LocationScreen(),
             ),
           ),
         ),
@@ -296,9 +294,6 @@ class _BeachDetailPageState extends State<BeachDetailPage> {
           "Check Water Quality",
           Icons.water,
           () {
-            // Define the action for checking water quality.
-            // For example, navigate to another page or show a dialog with water quality details.
-            // Replace the below with the actual implementation:
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -317,6 +312,16 @@ class _BeachDetailPageState extends State<BeachDetailPage> {
               },
             );
           },
+        ),
+        _buildActionButton(
+          "Book Adventure",
+          Icons.explore,
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const Book(),
+            ),
+          ),
         ),
       ],
     );
@@ -343,7 +348,11 @@ class _BeachDetailPageState extends State<BeachDetailPage> {
                 widget.beach['image'],
                 fit: BoxFit.cover,
               )
-            : const Placeholder(),
+            : const Icon(
+                Icons.image,
+                size: 100,
+                color: Colors.grey,
+              ),
       ),
     );
   }
@@ -352,29 +361,46 @@ class _BeachDetailPageState extends State<BeachDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.beach['name']),
+        title: Text(widget.beach['name'] ?? "Beach Details"),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildBeachImage(),
-                    const SizedBox(height: 16),
-                    if (errorMessage != null)
-                      Center(child: Text(errorMessage!))
-                    else ...[
-                      _buildWeatherCard(),
-                      const SizedBox(height: 16),
-                      _buildActionButtons(),
+          : errorMessage != null
+              ? Center(
+                  child: Text(errorMessage!),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildBeachImage(),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.beach['name'] ?? "Unknown Beach",
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              widget.beach['description'] ?? "",
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildWeatherCard(),
+                            const SizedBox(height: 16),
+                            _buildActionButtons(),
+                          ],
+                        ),
+                      ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ),
     );
   }
 }

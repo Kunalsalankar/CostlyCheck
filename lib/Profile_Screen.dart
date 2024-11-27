@@ -8,10 +8,10 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 149, 209, 244),
       ),
       body: Container(
-        color: Colors.teal[50],  // Same background color as Home Screen
+        color: Colors.white,  // Same background color as Home Screen
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,7 +22,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Color.fromARGB(255, 149, 209, 244),
                     child: Icon(Icons.account_circle, size: 80, color: Colors.white),
                   ),
                   Positioned(
@@ -46,27 +46,27 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Text(
               'Name: John Doe',
-              style: TextStyle(fontSize: 20, color: Colors.teal, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 1, 19, 17), fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             const Text(
               'Email: john.doe@example.com',
-              style: TextStyle(fontSize: 16, color: Colors.teal),
+              style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 1, 19, 17)),
             ),
             const SizedBox(height: 10),
             const Text(
               'Phone: +1234567890',
-              style: TextStyle(fontSize: 16, color: Colors.teal),
+              style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 1, 19, 17)),
             ),
             const SizedBox(height: 10),
             const Text(
               'Address: 123 Street Name, City, Country',
-              style: TextStyle(fontSize: 16, color: Colors.teal),
+              style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 1, 19, 17)),
             ),
             const SizedBox(height: 10),
             const Text(
               'Birthday: January 1, 1990',
-              style: TextStyle(fontSize: 16, color: Colors.teal),
+              style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 1, 19, 17)),
             ),
             const SizedBox(height: 30),
           ],

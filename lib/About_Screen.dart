@@ -8,7 +8,7 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('About Us'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: const Color.fromARGB(255, 149, 209, 244),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -29,7 +29,7 @@ class AboutScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: const Color.fromARGB(255, 9, 3, 19),
                     shadows: [
                       Shadow(
                         blurRadius: 4.0,
@@ -46,7 +46,7 @@ class AboutScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
-                  color: Colors.deepPurpleAccent,
+                  color: Color.fromARGB(255, 10, 4, 26),
                   decoration: TextDecoration.underline,
                 ),
               ),
@@ -64,7 +64,7 @@ class AboutScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
-                  color: Colors.deepPurpleAccent,
+                  color: Color.fromARGB(255, 16, 13, 26),
                   decoration: TextDecoration.underline,
                 ),
               ),

@@ -23,21 +23,23 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
         'https://api.openweathermap.org/data/2.5/forecast?q=$cityName,IN&APPID=$apiKey&units=metric';
 
     try {
-      // Fetch 5-day forecast
       final forecastResponse = await http.get(Uri.parse(forecastUrl));
       if (forecastResponse.statusCode == 200) {
         final forecastData = json.decode(forecastResponse.body);
         setState(() {
-          _forecastData = forecastData['list']; // Update forecast data
+          _forecastData = forecastData['list'];
+          _errorMessage = '';
         });
       } else {
         setState(() {
           _errorMessage = 'City not found or API error!';
+          _forecastData = [];
         });
       }
     } catch (e) {
       setState(() {
         _errorMessage = 'Error fetching data. Please try again later.';
+        _forecastData = [];
       });
     }
   }
@@ -57,12 +59,10 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
     }
   }
 
-  // Group forecast data by date
   Map<String, List<dynamic>> _groupForecastByDate() {
     Map<String, List<dynamic>> groupedData = {};
-    
     for (var forecast in _forecastData) {
-      String dateStr = forecast['dt_txt'].split(' ')[0]; // Extract date
+      String dateStr = forecast['dt_txt'].split(' ')[0];
       if (!groupedData.containsKey(dateStr)) {
         groupedData[dateStr] = [];
       }
@@ -71,26 +71,17 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
     return groupedData;
   }
 
-  // Function to determine the background color based on weather conditions
-  Color _getBackgroundColor(String date) {
-    // Ensure the background color is light enough for text visibility
-    return Color((date.hashCode * 0xFFFFFF).toInt()).withOpacity(0.8);
-  }
-
-  // Text style based on background color luminance
-  TextStyle _getTextStyle(bool isDarkBackground) {
-    return TextStyle(
-      color: isDarkBackground ? Colors.white : Colors.black,
-      fontSize: 14,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('5-Day Weather Forecast'),
-        backgroundColor: Colors.blue,
+        title: const Text(
+          'Weather Forecast',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: const Color.fromARGB(255, 149, 209, 244),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -103,7 +94,10 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
               decoration: InputDecoration(
                 labelText: 'Enter city name',
                 filled: true,
-                fillColor: Colors.blue.shade50,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search, color: Colors.blue),
                   onPressed: () {
@@ -121,74 +115,68 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
 
             // Display error message or forecast data
             if (_errorMessage.isNotEmpty)
-              Text(
-                _errorMessage,
-                style: const TextStyle(fontSize: 18, color: Colors.red),
+              Center(
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                ),
               ),
             if (_forecastData.isNotEmpty) ...[
               const Text(
                 '5-Day Forecast',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-
-              // Group the forecast by date
               Expanded(
                 child: ListView.builder(
                   itemCount: _groupForecastByDate().keys.length,
                   itemBuilder: (context, index) {
-                    // Get the date and forecast data for that date
                     String date = _groupForecastByDate().keys.elementAt(index);
-                    List<dynamic> dailyForecast = _groupForecastByDate()[date]!;
+                    List<dynamic> dailyForecast =
+                        _groupForecastByDate()[date]!;
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Date header
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: Text(
                             date,
                             style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.blueGrey,
+                            ),
                           ),
                         ),
-
-                        // List the forecast data for that date
                         ...dailyForecast.map((forecast) {
                           final time = DateTime.parse(forecast['dt_txt']);
                           final temperature = forecast['main']['temp'];
-                          final description = forecast['weather'][0]['description'];
-
-                          bool isDarkBackground =
-                              _getBackgroundColor(date).computeLuminance() < 0.5;
+                          final description = forecast['weather'][0]
+                              ['description'];
 
                           return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 8.0),
-                            elevation: 5,
-                            color: _getBackgroundColor(date),
+                            elevation: 2,
+                            margin: const EdgeInsets.only(bottom: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: ListTile(
-                              title: Text(
-                                '${time.hour}:${time.minute}',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              leading: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: _getAnimatedWeatherIcon(description),
                               ),
-                              subtitle: Row(
-                                children: [
-                                  // Set a fixed size for the Lottie icon
-                                  SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                    child: _getAnimatedWeatherIcon(description),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      '$temperature°C, $description',
-                                      style: _getTextStyle(isDarkBackground),
-                                      overflow: TextOverflow.ellipsis, // Ensure text does not overflow
-                                    ),
-                                  ),
-                                ],
+                              title: Text(
+                                '${time.hour}:${time.minute.toString().padLeft(2, '0')}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              subtitle: Text(
+                                '$temperature°C - $description',
+                                style: const TextStyle(fontSize: 12),
                               ),
                             ),
                           );

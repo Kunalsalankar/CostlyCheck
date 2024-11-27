@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'Explore.dart'; // Import explore screen
 
 class WaterParameter {
   final String name;
@@ -97,10 +98,11 @@ class _WaterScreenState extends State<WaterScreen> {
         isLoading = false;
       });
     } catch (e) {
-      if(mounted){
+      if (mounted) {
         setState(() {
-        isLoading = false;
-      });}
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -110,7 +112,7 @@ class _WaterScreenState extends State<WaterScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text('Water Quality: ${widget.beachName}'),
-          backgroundColor: Colors.teal,
+          backgroundColor: const Color.fromARGB(255, 149, 209, 244),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -134,22 +136,26 @@ class _WaterScreenState extends State<WaterScreen> {
 
     String statusMessage;
     Color statusColor;
+    bool isSafeToVisit;
 
     if (isAnyCriticalUnsafe) {
       statusMessage = "Unsafe to Visit the Beach";
       statusColor = Colors.red;
+      isSafeToVisit = false;
     } else if (safeCount >= parameters.length / 2) {
       statusMessage = "You can visit the beach";
       statusColor = Colors.green;
+      isSafeToVisit = true;
     } else {
       statusMessage = "Unsafe to Visit the Beach";
       statusColor = Colors.red;
+      isSafeToVisit = false;
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Water Quality: ${widget.beachName}'),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 149, 209, 244),
       ),
       body: Column(
         children: [
@@ -193,14 +199,72 @@ class _WaterScreenState extends State<WaterScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             color: statusColor.withOpacity(0.1),
-            child: Text(
-              statusMessage,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: statusColor,
-              ),
-              textAlign: TextAlign.center,
+            child: Column(
+              children: [
+                Text(
+                  statusMessage,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: statusColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                if (isSafeToVisit)
+                  const SizedBox(height: 20),
+                // Updated Explore Button with Gradient and Style
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate to ExploreScreen with beach name
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => ExploreScreen(beachName: widget.beachName)
+                      )
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    side: BorderSide(color: statusColor),
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: statusColor,
+                    ),
+                  ).copyWith(
+                    shadowColor: WidgetStateProperty.all(Colors.black.withOpacity(0.2)),
+                  ),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          statusColor.withOpacity(0.0),
+                          const Color.fromARGB(255, 149, 209, 244),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                      child: const Text(
+                        'Explore Beach',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

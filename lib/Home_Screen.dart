@@ -58,86 +58,98 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Home Screen'),  // Use the CustomAppBar
       drawer: CustomDrawer(beaches: beaches),  // Use the CustomDrawer
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+      body: Container(
+        color: const Color.fromARGB(255, 252, 254, 255), // Set the background color for the HomeScreen
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                onTap: () {
+                  // Navigate to SearchScreen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchScreen()),
+                  );
+                },
+              ),
+            ),
+            // Display the beach images and names vertically
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: beaches.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigate to BeachDetailPage with the selected beach data
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BeachDetailPage(beach: beaches[index]),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            beaches[index]['image'],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 200.0, // Adjust height as needed
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              beaches[index]['name'],
+                              style: const TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Alert Location Button at the bottom with custom color
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 149, 209, 244), // Change the color to your preferred one
+                ),
+                onPressed: () {
+                  // Navigate to AlertScreen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AlertScreen()),
+                  );
+                },
+                child: const Text(
+                  'Check Alert Location',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, // Bold the font
+                    fontSize: 18.0, // Increase font size
+                  ),
                 ),
               ),
-              onTap: () {
-                // Navigate to SearchScreen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SearchScreen()),
-                );
-              },
             ),
-          ),
-          // Display the beach images and names vertically
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(8.0),
-              itemCount: beaches.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      // Navigate to BeachDetailPage with the selected beach data
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BeachDetailPage(beach: beaches[index]),
-                        ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          beaches[index]['image'],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 200.0, // Adjust height as needed
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            beaches[index]['name'],
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          // Alert Location Button at the bottom
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Navigate to AlertScreen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AlertScreen()),
-                );
-              },
-              child: const Text(' Check Alert Location'),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

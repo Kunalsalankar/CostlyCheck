@@ -56,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search Results'),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 149, 209, 244),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,7 +68,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 filled: true,
                 fillColor: Colors.white,
                 hintText: 'Search for beaches...',
-                prefixIcon: const Icon(Icons.search, color: Colors.teal),
+                prefixIcon: const Icon(Icons.search, color: Color.fromARGB(255, 0, 13, 12)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -81,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 itemCount: filteredBeaches.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: const Icon(Icons.beach_access, color: Colors.teal),
+                    leading: const Icon(Icons.beach_access, color: Color.fromARGB(255, 0, 16, 14)),
                     title: Text(filteredBeaches[index]),
                     onTap: () {
                       final selectedBeach = filteredBeaches[index];

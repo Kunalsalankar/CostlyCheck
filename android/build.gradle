@@ -6,8 +6,9 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'  // Changed to stable version
+        classpath 'com.android.tools.build:gradle:7.4.2'  // Changed to stable version
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.3.15'
     }
 }
 

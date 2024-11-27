@@ -83,35 +83,82 @@ class _AlertScreenState extends State<AlertScreen> {
       appBar: AppBar(
         title: const Text('Ocean Alert Data'),
       ),
-      body: propertiesData.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: propertiesData.length,
-              itemBuilder: (context, index) {
-                final property = propertiesData[index];
-                final colorString = property['Color'] ?? 'white'; // Default color is white
-                final backgroundColor = getColorFromString(colorString);
+      body: Stack(
+        children: [
+          propertiesData.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: propertiesData.length,
+                  itemBuilder: (context, index) {
+                    final property = propertiesData[index];
+                    final colorString = property['Color'] ?? 'white'; // Default color is white
+                    final backgroundColor = getColorFromString(colorString);
 
-                return Card(
-                  margin: const EdgeInsets.all(10),
-                  color: backgroundColor, // Set background color dynamically
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('District: ${property['District']}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text('State: ${property['STATE']}'),
-                        Text('Message: ${property['Message']}'),
-                        Text('Alert: ${property['Alert']}'),
-                        Text('Color: ${property['Color']}'),
-                        Text('Issue Date: ${property['Issue Date']}'),
-                      ],
-                    ),
+                    return Card(
+                      margin: const EdgeInsets.all(10),
+                      color: backgroundColor, // Set background color dynamically
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('District: ${property['District']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text('State: ${property['STATE']}'),
+                            Text('Message: ${property['Message']}'),
+                            Text('Alert: ${property['Alert']}'),
+                            Text('Color: ${property['Color']}'),
+                            Text('Issue Date: ${property['Issue Date']}'),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+          // Threat Status box at the bottom right corner
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.lightBlueAccent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Threat Status', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(width: 20, height: 20, color: Colors.red),
+                      const Text(' Warning', style: TextStyle(color: Colors.white)),
+                    ],
                   ),
-                );
-              },
+                  Row(
+                    children: [
+                      Container(width: 20, height: 20, color: Colors.orange),
+                      const Text(' Alert', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Container(width: 20, height: 20, color: Colors.yellow),
+                      const Text(' Watch', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Container(width: 20, height: 20, color: Colors.green),
+                      const Text(' No Threat', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ],
+              ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

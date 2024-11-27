@@ -8,7 +8,7 @@ class Help_Screen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Help & Support'),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 149, 209, 244),
       ),
       body: SingleChildScrollView( // Wrap the entire body in a SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
