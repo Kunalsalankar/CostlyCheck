@@ -194,34 +194,6 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
       );
     }
 
-    if (_currentPosition != null) {
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.location_on, color: Colors.blue),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    'Your location: ${_currentPosition!.latitude.toStringAsFixed(4)}, '
-                        '${_currentPosition!.longitude.toStringAsFixed(4)}',
-                    style: const TextStyle(fontSize: 14),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-            TextButton(
-              onPressed: _getCurrentLocation,
-              child: const Text('Update Location'),
-            ),
-          ],
-        ),
-      );
-    }
 
     return const SizedBox.shrink();
   }
@@ -231,10 +203,11 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Beach Explorer',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ' Kochi Beaches',
+          style: TextStyle(color: Colors.black,
+              ),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 149, 209, 244),
         elevation: 0,
       ),
       body: Column(

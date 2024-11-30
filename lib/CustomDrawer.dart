@@ -1,15 +1,39 @@
 import 'package:flutter/material.dart';
-import 'Notification_Screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'Help_Screen.dart';
 import 'About_Screen.dart';
-import 'LocationScreen.dart';
-import 'WeatherForecastScreen.dart'; // Import WeatherForecastScreen
-import 'TidalForecastScreen.dart';
+import 'WeatherForecastScreen.dart';
+import 'successful.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   final List<Map<String, dynamic>> beaches;
 
-  const CustomDrawer({super.key, required this.beaches});
+  const CustomDrawer({Key? key, required this.beaches}) : super(key: key);
+
+  @override
+  _CustomDrawerState createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  Map<String, dynamic>? _latestBooking;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLatestBooking();
+  }
+
+  Future<void> _loadLatestBooking() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bookingJson = prefs.getString('latestBooking');
+
+    if (bookingJson != null) {
+      setState(() {
+        _latestBooking = json.decode(bookingJson);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,29 +67,8 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
           ),
+
           // Drawer Items with Navigation
-          ListTile(
-            leading: const Icon(Icons.map, color: Color.fromARGB(255, 0, 0, 0)),
-            title: const Text('Coastal Map'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LocationScreen(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.water, color: Color.fromARGB(255, 0, 0, 0)),
-            title: const Text('Tidal Forecast'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TidalForecastScreen()),
-              );
-            },
-          ),
           ListTile(
             leading: const Icon(Icons.cloud, color: Color.fromARGB(255, 0, 0, 0)),
             title: const Text('Weather Forecast'),
@@ -76,17 +79,44 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
+
           ListTile(
-            leading: const Icon(Icons.notifications, color: Color.fromARGB(255, 0, 0, 0)),
-            title: const Text('Notifications'),
+            leading: const Icon(Icons.local_activity, color: Color.fromARGB(255, 0, 0, 0)),
+            title: const Text('Activity'),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificationScreen()),
-              );
+              // Check if there's a latest booking
+              if (_latestBooking != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SuccessfulPage(
+                      name: _latestBooking!['name'] ?? '',
+                      beach: _latestBooking!['beach'] ?? '',
+                      activity: _latestBooking!['activity'] ?? '',
+                      numPeople: _latestBooking!['numPeople'] ?? 0,
+                      peopleDetails: _latestBooking!['peopleDetails'] != null
+                          ? List<Map<String, String>>.from(
+                          _latestBooking!['peopleDetails'].map<Map<String, String>>(
+                                  (item) => Map<String, String>.from(item)
+                          )
+                      )
+                          : [],
+                      date: _latestBooking!['date'] ?? '',
+                      price: (_latestBooking!['price'] is String
+                          ? double.tryParse(_latestBooking!['price']) ?? 0.0
+                          : (_latestBooking!['price'] ?? 0.0).toDouble()),
+                    ),
+                  ),
+                );
+              } else {
+                // Show a message if no booking exists
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No recent bookings found'))
+                );
+              }
             },
           ),
-          
+
           ListTile(
             leading: const Icon(Icons.help, color: Color.fromARGB(255, 0, 0, 0)),
             title: const Text('Help'),
@@ -97,6 +127,7 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
+
           ListTile(
             leading: const Icon(Icons.info, color: Color.fromARGB(255, 0, 0, 0)),
             title: const Text('About us'),

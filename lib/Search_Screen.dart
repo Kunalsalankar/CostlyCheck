@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'WaterScreen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -76,28 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredBeaches.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(Icons.beach_access, color: Color.fromARGB(255, 0, 16, 14)),
-                    title: Text(filteredBeaches[index]),
-                    onTap: () {
-                      final selectedBeach = filteredBeaches[index];
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WaterScreen(
-                            beachName: selectedBeach, // Pass beach name to WaterScreen
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
+
           ],
         ),
       ),

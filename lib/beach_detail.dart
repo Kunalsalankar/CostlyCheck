@@ -7,6 +7,7 @@ import 'special_places_page.dart';
 import 'map.dart';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
+import 'ActivityScreen.dart';
 
 class BeachDetailPage extends StatefulWidget {
   final Map<String, dynamic> beach;
@@ -726,12 +727,13 @@ class _BeachDetailPageState extends State<BeachDetailPage> {
           ),
         ),
         _buildActionButton(
-          "Transportation Options",
-          Icons.directions_bus,
+          "Activity Manager",
+          Icons.local_activity_sharp,
               () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TransportationPage(beach: widget.beach),
+              builder: (context) => ActivityScreen(    beachName: widget.beach['name'],
+              )
             ),
           ),
         ),
