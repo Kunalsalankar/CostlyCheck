@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'beach_detail.dart';
 
 class KochiBeachesPage extends StatefulWidget {
@@ -10,6 +12,7 @@ class KochiBeachesPage extends StatefulWidget {
 }
 
 class _KochiBeachesPageState extends State<KochiBeachesPage> {
+  // Predefined beaches for Kochi
   final List<Map<String, dynamic>> allBeaches = [
     {
       'name': 'Munambam Beach',
@@ -17,7 +20,9 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
       'image': 'assets/images/img_3.png',
       'coordinates': [10.1866, 76.1700],
       'description': 'A serene beach known for its pristine waters and fishing activities. This beautiful stretch of coastline offers visitors a peaceful retreat with its golden sands and traditional fishing boats dotting the shore. Perfect for morning walks and experiencing local coastal life.',
-      'distance': 0.0, // Added distance field
+      'distance': 0.0,
+      'latitude': 10.1866,
+      'longitude': 76.1700,
     },
     {
       'name': 'Kuzhupilly Beach',
@@ -26,6 +31,8 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
       'coordinates': [10.102461804647696, 76.18927896567227],
       'description': 'Pristine beach with golden sands and peaceful atmosphere. A hidden gem featuring untouched natural beauty, swaying palm trees, and minimal crowds. Ideal for those seeking a quiet beach experience away from the tourist hustle.',
       'distance': 0.0,
+      'latitude': 10.102461804647696,
+      'longitude': 76.18927896567227,
     },
     {
       'name': 'Puthuvype Beach',
@@ -34,6 +41,8 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
       'coordinates': [10.0069, 76.2144],
       'description': 'Famous for its lighthouse and scenic coastal views. The beach is home to Kerala\'s tallest lighthouse and offers spectacular views of the Arabian Sea. Popular for weekend picnics and photography enthusiasts.',
       'distance': 0.0,
+      'latitude': 10.0069,
+      'longitude': 76.2144,
     },
     {
       'name': 'Cherai Beach',
@@ -42,29 +51,165 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
       'coordinates': [10.142036897785669, 76.1785715048626],
       'description': 'Popular beach known for golden sand and seashells. This 15-km long beach is famous for its pristine waters, gentle waves, and unique location between the Arabian Sea and backwaters. Perfect for swimming and watching dolphins.',
       'distance': 0.0,
-    },
-    {
-      'name': 'Fort Kochi Beach',
-      'location': 'Kochi, Kerala',
-      'image': 'assets/images/img_7.png',
-      'coordinates':  [9.963853171210706, 76.2375040151241],
-      'description': 'Historic beach with Chinese fishing nets and cultural heritage. A culturally rich coastal area famous for its colonial architecture, art cafes, and iconic Chinese fishing nets. Best known for spectacular sunsets and cultural experiences.',
-      'distance': 0.0,
+      'latitude': 10.142036897785669,
+      'longitude': 76.1785715048626,
     },
   ];
 
+  List<Map<String, dynamic>> _beachesList = [];
   List<Map<String, dynamic>> filteredBeaches = [];
   final TextEditingController searchController = TextEditingController();
   Position? _currentPosition;
   String? _errorMessage;
   bool _isLoading = true;
+  DatabaseReference? _databaseReference;
 
   @override
   void initState() {
     super.initState();
-    filteredBeaches = List.from(allBeaches);
+    _initializeFirebase();
     searchController.addListener(_filterBeaches);
-    _initializeLocation();
+  }
+
+  Future<void> _initializeFirebase() async {
+    try {
+      // Ensure Firebase is initialized
+      await Firebase.initializeApp();
+
+      // Reference to the BeachesSet in Firebase
+      _databaseReference = FirebaseDatabase.instance.ref('BeachesSet');
+
+      // Initialize with hardcoded beaches first
+      setState(() {
+        _beachesList = List.from(allBeaches);
+        filteredBeaches = List.from(_beachesList);
+      });
+
+      // Fetch beaches from Firebase
+      _fetchKochiBeaches();
+
+      // Initialize location
+      _initializeLocation();
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Firebase initialization error: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _fetchKochiBeaches() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    _databaseReference?.onValue.listen(
+          (event) {
+        final dynamic data = event.snapshot.value;
+        List<Map<String, dynamic>> fetchedBeaches = List.from(allBeaches);
+
+        try {
+          // Add dynamically added beaches from Firebase
+          if (data != null && data is Map) {
+            data.forEach((key, value) {
+              if (value is Map) {
+                // Extract the beach data
+                final String? beachName = value['nameofbeach']?.toString();
+                final String? beachLocation = value['location']?.toString();
+                final String? beachDescription = value['description']?.toString();
+                final dynamic beachCoordinates = value['coordinates'];
+
+                // Skip entries without required fields
+                if (beachName == null || beachLocation == null) {
+                  return;
+                }
+
+                // Process coordinates
+                List<double> coordinates = _parseCoordinates(beachCoordinates);
+
+                // Add the beach to our list
+                fetchedBeaches.add({
+                  'name': beachName,
+                  'location': beachLocation,
+                  'image': 'assets/images/logo1.jpg', // Default image
+                  'coordinates': coordinates,
+                  'description': beachDescription ?? 'No description available',
+                  'distance': 0.0,
+                  'latitude': coordinates[0],
+                  'longitude': coordinates[1],
+                });
+              }
+            });
+          }
+        } catch (e) {
+          print('Error processing Firebase data: $e');
+        }
+
+        setState(() {
+          _beachesList = fetchedBeaches;
+          filteredBeaches = List.from(_beachesList);
+          _isLoading = false;
+        });
+
+        // Update distances if location is available
+        if (_currentPosition != null) {
+          _updateBeachDistances();
+        }
+      },
+      onError: (error) {
+        setState(() {
+          _errorMessage = 'Error fetching beaches: ${error.toString()}';
+          _isLoading = false;
+        });
+      },
+    );
+  }
+
+  // Helper method to parse coordinates
+  List<double> _parseCoordinates(dynamic coordinatesString) {
+    try {
+      if (coordinatesString != null) {
+        // Handle string format from Firebase (based on the screenshot)
+        if (coordinatesString is String) {
+          // Check if it's a comma-separated format like "1313,1242"
+          if (coordinatesString.contains(',')) {
+            final parts = coordinatesString.split(',');
+            if (parts.length >= 2) {
+              return [
+                double.parse(parts[0].trim()),
+                double.parse(parts[1].trim())
+              ];
+            }
+          }
+
+          // Try to parse other formats if needed
+          // This could be expanded based on the actual data format
+        }
+        // Handle array format
+        else if (coordinatesString is List) {
+          if (coordinatesString.length >= 2) {
+            return [
+              double.parse(coordinatesString[0].toString()),
+              double.parse(coordinatesString[1].toString())
+            ];
+          }
+        }
+        // Handle map format
+        else if (coordinatesString is Map) {
+          if (coordinatesString.containsKey('latitude') &&
+              coordinatesString.containsKey('longitude')) {
+            return [
+              double.parse(coordinatesString['latitude'].toString()),
+              double.parse(coordinatesString['longitude'].toString())
+            ];
+          }
+        }
+      }
+    } catch (e) {
+      print('Error parsing coordinates: $e');
+    }
+    // Return a default coordinate if parsing fails
+    return [9.9672, 76.2444]; // Default Kochi coordinates
   }
 
   @override
@@ -154,9 +299,9 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
     final String searchTerm = searchController.text.toLowerCase();
     setState(() {
       if (searchTerm.isEmpty) {
-        filteredBeaches = List.from(allBeaches);
+        filteredBeaches = List.from(_beachesList);
       } else {
-        filteredBeaches = allBeaches.where((beach) {
+        filteredBeaches = _beachesList.where((beach) {
           return beach['name'].toString().toLowerCase().contains(searchTerm) ||
               beach['location'].toString().toLowerCase().contains(searchTerm) ||
               beach['description'].toString().toLowerCase().contains(searchTerm);
@@ -194,7 +339,6 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
       );
     }
 
-
     return const SizedBox.shrink();
   }
 
@@ -203,9 +347,8 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          ' Kochi Beaches',
-          style: TextStyle(color: Colors.black,
-              ),
+          'Kochi Beaches',
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Color.fromARGB(255, 149, 209, 244),
         elevation: 0,
@@ -267,10 +410,15 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BeachDetailPage(beach: beach),
-                      ),
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BeachDetailPage(
+                            beach: beach,
+                            distance: beach['distance'],
+                            latitude: beach['coordinates'][0],
+                            longitude: beach['coordinates'][1],
+                          ),
+                        )
                     );
                   },
                   child: Card(
@@ -302,6 +450,8 @@ class _KochiBeachesPageState extends State<KochiBeachesPage> {
                                 style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               Row(

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+import 'package:final_project/Notification_Screen.dart';
 
-import 'notification_screen.dart';
-import 'profile_screen.dart';
 import 'kochi.dart';
-import 'Visakhapatnam.dart';
-import 'CustomDrawer.dart';
-import 'successful.dart';
+import 'WeatherForecastScreen.dart';
+import 'profile_screen.dart';
 class HomeView extends StatefulWidget {
+  const HomeView({super.key});
+
   @override
   _HomeViewState createState() => _HomeViewState();
 }
@@ -25,25 +25,13 @@ class _HomeViewState extends State<HomeView> {
       'activities': ['Fishing', 'Sunset viewing', 'Photography'],
       'routeName': 'kochi'
     },
-    {
-      'name': 'Visakhapatnam',
-      'location': 'Andhra Pradesh',
-      'image': 'assets/images/img_26.png',
-      'description': 'A coastal city with beautiful beaches, rich history, and scenic views of the Bay of Bengal.',
-      'coordinates': [17.6868, 83.2185],
-      'activities': ['Beach activities', 'Historical tours', 'Photography', 'Fishing'],
-      'routeName': 'visakhapatnam'
-    }
   ];
 
   List<Map<String, dynamic>> filteredBeaches = [];
   String searchQuery = '';
 
   // Weather and Location Variables
-  String weatherDescription = "Loading...";
   double temperature = 0.0;
-  double windSpeed = 0.0;
-  Position? _currentPosition;
   bool _isLocationLoading = true;
   String? _locationError;
 
@@ -54,10 +42,10 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     filteredBeaches = beaches;
-    _initializeLocationAndWeather();
+    _initializeLocation();
   }
 
-  Future<void> _initializeLocationAndWeather() async {
+  Future<void> _initializeLocation() async {
     setState(() {
       _isLocationLoading = true;
       _locationError = null;
@@ -81,15 +69,14 @@ class _HomeViewState extends State<HomeView> {
         throw 'Location permissions permanently denied.';
       }
 
-      _currentPosition = await Geolocator.getCurrentPosition(
+      Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high
       );
 
-      fetchWeatherData(_currentPosition!.latitude, _currentPosition!.longitude);
+      fetchWeatherData(currentPosition.latitude, currentPosition.longitude);
     } catch (e) {
       setState(() {
         _locationError = e.toString();
-        weatherDescription = "Weather data unavailable";
       });
     } finally {
       setState(() {
@@ -108,18 +95,16 @@ class _HomeViewState extends State<HomeView> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          weatherDescription = data['weather'][0]['description'];
           temperature = data['main']['temp'];
-          windSpeed = data['wind']['speed'];
         });
       } else {
         setState(() {
-          weatherDescription = "Failed to fetch weather data";
+          temperature = 0.0;
         });
       }
     } catch (e) {
       setState(() {
-        weatherDescription = "Error: $e";
+        temperature = 0.0;
       });
     }
   }
@@ -144,13 +129,7 @@ class _HomeViewState extends State<HomeView> {
           context,
           MaterialPageRoute(builder: (context) => KochiBeachesPage()),
         );
-        break;
-      case 'visakhapatnam':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => VisakhapatnamBeachesPage()),
-        );
-        break;
+
     }
   }
 
@@ -172,15 +151,15 @@ class _HomeViewState extends State<HomeView> {
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => CustomDrawer(beaches: beaches)),
+          MaterialPageRoute(builder: (context) => WeatherForecastScreen()),
         );
-        break;
       case 3:
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ProfileScreen()),
         );
         break;
+
     }
   }
 
@@ -255,7 +234,6 @@ class _HomeViewState extends State<HomeView> {
                           ),
                         ),
 
-
                         Positioned(
                           top: 20,
                           left: 16,
@@ -263,25 +241,13 @@ class _HomeViewState extends State<HomeView> {
                               ? CircularProgressIndicator()
                               : _locationError != null
                               ? Text(_locationError!, style: TextStyle(color: Colors.white))
-                              : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${temperature.toStringAsFixed(1)}°C',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                weatherDescription,
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
+                              : Text(
+                            '${temperature.toStringAsFixed(1)}°C',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
 
@@ -303,7 +269,7 @@ class _HomeViewState extends State<HomeView> {
                             ),
                             child: TextField(
                               decoration: InputDecoration(
-                                hintText: 'Search for a beach...',
+                                hintText: 'Search for a city...',
                                 prefixIcon: Icon(Icons.search, color: Colors.grey),
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -373,12 +339,12 @@ class _HomeViewState extends State<HomeView> {
             label: 'Notifications',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menu',
+            icon: Icon(Icons.location_city),
+            label: 'City Weather',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_activity_sharp),
-            label: 'User Activity ',
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),
@@ -390,7 +356,7 @@ class BeachCard extends StatelessWidget {
   final Map<String, dynamic> beach;
   final VoidCallback onTap;
 
-  const BeachCard({Key? key, required this.beach, required this.onTap}) : super(key: key);
+  const BeachCard({super.key, required this.beach, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

@@ -41,54 +41,56 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAPUHRHejAnOzbPs-_Y_WDBlpLlOVLZjsw',
-    appId: '1:1098406126947:ios:9fabec4d2d4350873e9f56',
-    messagingSenderId: '1098406126947',
-    projectId: 'finalproject-7d8fd',
-    databaseURL: 'https://finalproject-7d8fd-default-rtdb.firebaseio.com',
-    storageBucket: 'finalproject-7d8fd.firebasestorage.app',
+    apiKey: 'AIzaSyBs_XdjTldZnXX-Wcz0F7hPiD1DB3FxnQY',
+    appId: '1:933477566768:ios:37c0d98b8e19ac624c60f5',
+    messagingSenderId: '933477566768',
+    projectId: 'yash-9dd33',
+    databaseURL: 'https://yash-9dd33-default-rtdb.firebaseio.com',
+    storageBucket: 'yash-9dd33.firebasestorage.app',
+    iosClientId: '933477566768-3679l4ubdti0o30u7c0phhgj51fbcvi2.apps.googleusercontent.com',
     iosBundleId: 'com.example.finalProject',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA5PPJOvBXrt1BXLXpNirWYLqYTi9PuyGg',
-    appId: '1:1098406126947:web:81cd954a947196683e9f56',
-    messagingSenderId: '1098406126947',
-    projectId: 'finalproject-7d8fd',
-    authDomain: 'finalproject-7d8fd.firebaseapp.com',
-    databaseURL: 'https://finalproject-7d8fd-default-rtdb.firebaseio.com',
-    storageBucket: 'finalproject-7d8fd.firebasestorage.app',
-    measurementId: 'G-K0JHYPP2E9',
+    apiKey: 'AIzaSyCEG79vjoQAQ2CKeUTIoORk2VSdldXF33E',
+    appId: '1:933477566768:web:5fa44573d34c86fa4c60f5',
+    messagingSenderId: '933477566768',
+    projectId: 'yash-9dd33',
+    authDomain: 'yash-9dd33.firebaseapp.com',
+    databaseURL: 'https://yash-9dd33-default-rtdb.firebaseio.com',
+    storageBucket: 'yash-9dd33.firebasestorage.app',
+    measurementId: 'G-ZP9YZX8Q14',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAPUHRHejAnOzbPs-_Y_WDBlpLlOVLZjsw',
-    appId: '1:1098406126947:ios:9fabec4d2d4350873e9f56',
-    messagingSenderId: '1098406126947',
-    projectId: 'finalproject-7d8fd',
-    databaseURL: 'https://finalproject-7d8fd-default-rtdb.firebaseio.com',
-    storageBucket: 'finalproject-7d8fd.firebasestorage.app',
+    apiKey: 'AIzaSyBs_XdjTldZnXX-Wcz0F7hPiD1DB3FxnQY',
+    appId: '1:933477566768:ios:37c0d98b8e19ac624c60f5',
+    messagingSenderId: '933477566768',
+    projectId: 'yash-9dd33',
+    databaseURL: 'https://yash-9dd33-default-rtdb.firebaseio.com',
+    storageBucket: 'yash-9dd33.firebasestorage.app',
+    iosClientId: '933477566768-3679l4ubdti0o30u7c0phhgj51fbcvi2.apps.googleusercontent.com',
     iosBundleId: 'com.example.finalProject',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCU0O2mnjiYG-lminufDnKXN8oPzppqRf4',
-    appId: '1:1098406126947:android:23116fcfbb17682e3e9f56',
-    messagingSenderId: '1098406126947',
-    projectId: 'finalproject-7d8fd',
-    databaseURL: 'https://finalproject-7d8fd-default-rtdb.firebaseio.com',
-    storageBucket: 'finalproject-7d8fd.firebasestorage.app',
+    apiKey: 'AIzaSyB06EIUAQ2RnQ_xaorG-P-glnVg3ju1I1w',
+    appId: '1:933477566768:android:59337aa2b78636304c60f5',
+    messagingSenderId: '933477566768',
+    projectId: 'yash-9dd33',
+    databaseURL: 'https://yash-9dd33-default-rtdb.firebaseio.com',
+    storageBucket: 'yash-9dd33.firebasestorage.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyA5PPJOvBXrt1BXLXpNirWYLqYTi9PuyGg',
-    appId: '1:1098406126947:web:3ef0e26c34aaf5f63e9f56',
-    messagingSenderId: '1098406126947',
-    projectId: 'finalproject-7d8fd',
-    authDomain: 'finalproject-7d8fd.firebaseapp.com',
-    databaseURL: 'https://finalproject-7d8fd-default-rtdb.firebaseio.com',
-    storageBucket: 'finalproject-7d8fd.firebasestorage.app',
-    measurementId: 'G-W378CBWK8K',
+    apiKey: 'AIzaSyCEG79vjoQAQ2CKeUTIoORk2VSdldXF33E',
+    appId: '1:933477566768:web:a1dccca8a35a932a4c60f5',
+    messagingSenderId: '933477566768',
+    projectId: 'yash-9dd33',
+    authDomain: 'yash-9dd33.firebaseapp.com',
+    databaseURL: 'https://yash-9dd33-default-rtdb.firebaseio.com',
+    storageBucket: 'yash-9dd33.firebasestorage.app',
+    measurementId: 'G-LVBR49ZHH5',
   );
 
 }

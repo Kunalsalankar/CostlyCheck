@@ -78,6 +78,7 @@ class PointOfInterest {
     this.additionalInfo,
   });
 }
+
 class MapPage extends StatefulWidget {
   final Map<String, dynamic> selectedBeach;
   final List<Map<String, dynamic>> allBeaches;
@@ -113,6 +114,7 @@ class _MapPageState extends State<MapPage> {
     'hotel',
     'tourist_place'
   };
+
   List<PointOfInterest> pointsOfInterest = [];
 
   void _showCoordinatesDialog(Beach beach) {
@@ -154,15 +156,71 @@ class _MapPageState extends State<MapPage> {
     // Initialize beaches with your coordinates
     beaches = [
       Beach(
+        name: 'Munambam Beach',
+        location: 'Munambam ',
+        coordinates: [10.177251950103422, 76.16550196656354 ],
+      ),
+      Beach(
         name: 'Fort Kochi Beach',
         location: 'Fort Kochi',
-        coordinates: [9.963853171210706, 76.2375040151241],
+        coordinates: [9.963959530419027, 76.2373541358738],
       ),
       Beach(
         name: 'Cherai Beach',
         location: 'Cherai',
-        coordinates: [10.142036897785669, 76.1785715048626],
+        coordinates: [10.142459345097684, 76.1783140190165],
       ),
+      Beach(
+        name: 'Kuzhupilly Beach',
+        location: 'Kuzhupilly',
+        coordinates: [10.110531447381613, 76.18730486611027],
+      ),
+      Beach(
+        name: 'Andhakaranazhi Beach',
+        location: 'Andhakaranazhi',
+        coordinates: [9.748780245066841, 76.28423445703498],
+      ),
+      Beach(
+        name: 'Rushikonda Beach',
+        location: 'Visakhapatnam, Andhra Pradesh',
+        coordinates: [17.782743599368896, 83.38513003471017],
+      ),
+      Beach(
+        name: 'Bheemili Beach',
+        location: 'Visakhapatnam, Andhra Pradesh',
+        coordinates: [17.890727074303157, 83.45569896851545],
+      ),
+      Beach(
+        name: 'Lawson\'s Bay Beach',
+        location: 'Visakhapatnam, Andhra Pradesh',
+        coordinates: [17.741957898508407, 83.34485192635064],
+      ),
+      Beach(
+        name: 'Sagar Nagar Beach',
+        location: 'Visakhapatnam, Andhra Pradesh',
+        coordinates: [17.76191354086149, 83.36042757623399],
+      ),
+      Beach(
+        name: 'Marina Beach',
+        location: 'Chennai, Tamil Nadu',
+        coordinates: [13.051133780406854, 80.2824880520262],
+      ),
+      Beach(
+        name: 'Elliot\'s Beach',
+        location: 'Besant Nagar, Chennai, Tamil Nadu',
+        coordinates: [12.999714796115375, 80.27221762587396],
+      ),
+      Beach(
+        name: 'Mahabalipuram Beach',
+        location: 'Mahabalipuram, Tamil Nadu',
+        coordinates: [12.613145369117081, 80.19638628674777],
+      ),
+      Beach(
+        name: 'Kanyakumari Beach',
+        location: 'Kanyakumari, Tamil Nadu',
+        coordinates: [8.086718507835178, 77.55441451695035],
+      ),
+
     ];
     selectedLocation = beaches.firstWhere(
           (beach) => beach.name == widget.selectedBeach['name'],

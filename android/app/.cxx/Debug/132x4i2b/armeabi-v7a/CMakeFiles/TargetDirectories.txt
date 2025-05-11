@@ -1,0 +1,2 @@
+C:/Users/kunal salankar/Downloads/final_one/final_project/android/app/.cxx/Debug/132x4i2b/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/kunal salankar/Downloads/final_one/final_project/android/app/.cxx/Debug/132x4i2b/armeabi-v7a/CMakeFiles/rebuild_cache.dir

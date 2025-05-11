@@ -1,0 +1,2 @@
+C:/Users/kunal salankar/Downloads/app(sem 6)/final_one(mini presentation)/final_project/android/app/.cxx/Debug/53175v5g/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/kunal salankar/Downloads/app(sem 6)/final_one(mini presentation)/final_project/android/app/.cxx/Debug/53175v5g/x86_64/CMakeFiles/rebuild_cache.dir
