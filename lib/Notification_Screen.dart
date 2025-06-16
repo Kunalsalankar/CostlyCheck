@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +14,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   List<Map<String, dynamic>> notifications = [];
   List<Map<String, dynamic>> activityNotifications = [];
+  List<Map<String, dynamic>> generalNotifications = [];
   bool _isLoading = true;
 
   @override
@@ -23,19 +25,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> fetchAllNotifications() async {
     try {
-      // Fetch beach safety alerts
+      // Fetch all types of notifications
       DatabaseReference alertsRef = _database.ref('alerts');
       DatabaseReference activityRef = _database.ref('activity-notification');
+      DatabaseReference generalRef = _database.ref('notifications');
 
-      // Fetch both types of notifications concurrently
+      // Fetch all types of notifications concurrently
       await Future.wait([
         fetchAlerts(alertsRef),
-        fetchActivityNotifications(activityRef)
+        fetchActivityNotifications(activityRef),
+        fetchGeneralNotifications(generalRef)
       ]);
 
       setState(() {
         // Combine and sort all notifications by timestamp
         notifications.addAll(activityNotifications);
+        notifications.addAll(generalNotifications);
         notifications.sort((a, b) =>
             (b['timestamp'] as int).compareTo(a['timestamp'] as int));
         _isLoading = false;
@@ -49,50 +54,167 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> fetchAlerts(DatabaseReference ref) async {
-    DataSnapshot snapshot = await ref.get();
+    try {
+      DataSnapshot snapshot = await ref.get();
 
-    if (snapshot.exists) {
-      Map<String, dynamic> data = Map.from(snapshot.value as Map);
-      List<Map<String, dynamic>> fetchedAlerts = data.entries.map((entry) {
-        var notification = entry.value;
-        return {
-          'id': entry.key,
-          'type': 'Beach Safety Alert',
-          'objectID': notification['objectID'] ?? 'N/A',
-          'name': notification['name'] ?? 'Untitled Alert',
-          'message': notification['message'] ?? 'No description',
-          'district': notification['district'] ?? 'Unknown',
-          'state': notification['state'] ?? 'Unknown',
-          'color': notification['color'] ?? Colors.blue,
-          'issueDate': notification['issueDate'] ?? DateTime.now().toString(),
-          'timestamp': notification['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
-        };
-      }).toList();
+      if (snapshot.exists && snapshot.value != null) {
+        // Handle case when the data is an actual Map
+        if (snapshot.value is Map) {
+          Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
+          List<Map<String, dynamic>> fetchedAlerts = [];
 
-      notifications.addAll(fetchedAlerts);
+          data.forEach((key, value) {
+            if (value is Map) {
+              Map<dynamic, dynamic> notification = value;
+              fetchedAlerts.add({
+                'id': key.toString(),
+                'type': 'Beach Safety Alert',
+                'objectID': notification['objectID']?.toString() ?? 'N/A',
+                'name': notification['name']?.toString() ?? 'Untitled Alert',
+                'message': notification['message']?.toString() ?? 'No description',
+                'district': notification['district']?.toString() ?? 'Unknown',
+                'state': notification['state']?.toString() ?? 'Unknown',
+                'color': notification['color'] ?? Colors.blue,
+                'issueDate': notification['issueDate']?.toString() ?? DateTime.now().toString(),
+                'timestamp': notification['timestamp'] is int
+                    ? notification['timestamp']
+                    : DateTime.now().millisecondsSinceEpoch,
+              });
+            }
+          });
+
+          if (fetchedAlerts.isNotEmpty) {
+            notifications.addAll(fetchedAlerts);
+            print("Added ${fetchedAlerts.length} alerts from 'alerts' path");
+          } else {
+            print("No alerts found in valid format");
+          }
+        } else {
+          print("Data at 'alerts' is not a Map: ${snapshot.value.runtimeType}");
+        }
+      } else {
+        print("No data exists at 'alerts' path");
+      }
+    } catch (e) {
+      print("Error fetching alerts: $e");
     }
   }
 
   Future<void> fetchActivityNotifications(DatabaseReference ref) async {
-    DataSnapshot snapshot = await ref.get();
+    try {
+      DataSnapshot snapshot = await ref.get();
 
-    if (snapshot.exists) {
-      Map<String, dynamic> data = Map.from(snapshot.value as Map);
-      List<Map<String, dynamic>> fetchedActivityNotifications = data.entries.map((entry) {
-        var notification = entry.value;
-        return {
-          'id': entry.key,
-          'type': 'Activity Notification',
-          'objectID': notification['objectID'] ?? 'N/A',
-          'name': notification['name'] ?? 'Untitled Activity',
-          'message': notification['message'] ?? 'No description',
-          'location': notification['location'] ?? 'Unknown',
-          'color': Colors.green, // Custom color for activity notifications
-          'timestamp': notification['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
-        };
-      }).toList();
+      if (snapshot.exists && snapshot.value != null) {
+        // Handle case when the data is an actual Map
+        if (snapshot.value is Map) {
+          Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
+          List<Map<String, dynamic>> fetchedActivityNotifications = [];
 
-      activityNotifications.addAll(fetchedActivityNotifications);
+          data.forEach((key, value) {
+            if (value is Map) {
+              Map<dynamic, dynamic> notification = value;
+              fetchedActivityNotifications.add({
+                'id': key.toString(),
+                'type': 'Activity Notification',
+                'objectID': notification['objectID']?.toString() ?? 'N/A',
+                'name': notification['name']?.toString() ?? 'Untitled Activity',
+                'message': notification['message']?.toString() ?? 'No description',
+                'location': notification['location']?.toString() ?? 'Unknown',
+                'color': Colors.green, // Custom color for activity notifications
+                'timestamp': notification['timestamp'] is int
+                    ? notification['timestamp']
+                    : DateTime.now().millisecondsSinceEpoch,
+              });
+            }
+          });
+
+          if (fetchedActivityNotifications.isNotEmpty) {
+            activityNotifications.addAll(fetchedActivityNotifications);
+            print("Added ${fetchedActivityNotifications.length} activities from 'activity-notification' path");
+          } else {
+            print("No activity notifications found in valid format");
+          }
+        } else {
+          print("Data at 'activity-notification' is not a Map: ${snapshot.value.runtimeType}");
+        }
+      } else {
+        print("No data exists at 'activity-notification' path");
+      }
+    } catch (e) {
+      print("Error fetching activity notifications: $e");
+    }
+  }
+
+  // New method to fetch general notifications from the 'notifications' path
+  Future<void> fetchGeneralNotifications(DatabaseReference ref) async {
+    try {
+      DataSnapshot snapshot = await ref.get();
+
+      if (snapshot.exists && snapshot.value != null) {
+        // Debug output to see data structure
+        print("Notifications data structure: ${snapshot.value.runtimeType}");
+
+        // Handle case when the data is an actual Map
+        if (snapshot.value is Map) {
+          Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
+          List<Map<String, dynamic>> fetchedGeneralNotifications = [];
+
+          data.forEach((key, value) {
+            if (value is Map) {
+              Map<dynamic, dynamic> notification = value;
+              print("Processing notification with key: $key");
+
+              // Determine color based on priority
+              Color notificationColor;
+              String priority = notification['priority']?.toString().toLowerCase() ?? 'medium';
+              switch (priority) {
+                case 'high':
+                  notificationColor = Colors.red;
+                  break;
+                case 'medium':
+                  notificationColor = Colors.orange;
+                  break;
+                case 'low':
+                  notificationColor = Colors.green;
+                  break;
+                default:
+                  notificationColor = Colors.blue;
+              }
+
+              // Print debug info about createdAt field
+              print("createdAt type: ${notification['createdAt']?.runtimeType}");
+              print("createdAt value: ${notification['createdAt']}");
+
+              // Build notification object
+              fetchedGeneralNotifications.add({
+                'id': key.toString(),
+                'type': 'General Notification',
+                'objectID': key.toString().substring(0, min(8, key.toString().length)), // Use part of the Firebase key as object ID
+                'name': notification['title']?.toString() ?? 'Untitled Notification',
+                'message': notification['message']?.toString() ?? 'No description',
+                'priority': notification['priority']?.toString() ?? 'medium',
+                'color': notificationColor,
+                'timestamp': notification['createdAt'] is int
+                    ? notification['createdAt']
+                    : DateTime.now().millisecondsSinceEpoch,
+              });
+            }
+          });
+
+          if (fetchedGeneralNotifications.isNotEmpty) {
+            generalNotifications.addAll(fetchedGeneralNotifications);
+            print("Added ${fetchedGeneralNotifications.length} notifications from 'notifications' path");
+          } else {
+            print("No general notifications found in valid format");
+          }
+        } else {
+          print("Data at 'notifications' is not a Map: ${snapshot.value.runtimeType}");
+        }
+      } else {
+        print("No data exists at 'notifications' path");
+      }
+    } catch (e) {
+      print("Error fetching general notifications: $e");
     }
   }
 
@@ -173,6 +295,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ? _parseColor(notification['color'])
         : notification['color'];
 
+    // Get the notification type for display
+    String typeText = notification['type'];
+
+    // For general notifications, add priority level
+    if (typeText == 'General Notification') {
+      String priority = notification['priority'] ?? 'medium';
+      typeText = '$typeText - ${priority.toUpperCase()}';
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -203,7 +334,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                   child: Center(
                     child: Icon(
-                      Icons.notifications,
+                      _getNotificationIcon(notification['type']),
                       color: alertColor,
                       size: 30,
                     ),
@@ -224,7 +355,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         maxLines: 2,
                       ),
                       Text(
-                        notification['type'],
+                        typeText,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -268,7 +399,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               spacing: 10,
               runSpacing: 8,
               children: [
-                // Conditional location/district display
+                // Conditional location/district display based on notification type
                 if (notification['type'] == 'Beach Safety Alert')
                   _buildInfoChip(
                     icon: Icons.location_on,
@@ -278,7 +409,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   _buildInfoChip(
                     icon: Icons.location_on,
                     text: notification['location'] ?? 'Unknown',
-                  ),
+                  )
+                else if (notification['type'] == 'General Notification')
+                    _buildInfoChip(
+                      icon: Icons.priority_high,
+                      text: 'Priority: ${(notification['priority'] ?? 'medium').toUpperCase()}',
+                    ),
                 _buildInfoChip(
                   icon: Icons.calendar_today,
                   text: _formatDate(notification['timestamp']),
@@ -289,6 +425,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
       ),
     );
+  }
+
+  IconData _getNotificationIcon(String type) {
+    switch (type) {
+      case 'Beach Safety Alert':
+        return Icons.warning;
+      case 'Activity Notification':
+        return Icons.directions_run;
+      case 'General Notification':
+        return Icons.notifications;
+      default:
+        return Icons.notifications;
+    }
   }
 
   Widget _buildInfoChip({required IconData icon, required String text}) {

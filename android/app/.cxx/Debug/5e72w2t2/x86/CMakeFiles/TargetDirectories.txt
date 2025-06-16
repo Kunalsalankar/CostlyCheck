@@ -1,0 +1,2 @@
+D:/sem_6_mini _project/app(sem 6)/final_one(mini presentation)/final_project/android/app/.cxx/Debug/5e72w2t2/x86/CMakeFiles/edit_cache.dir
+D:/sem_6_mini _project/app(sem 6)/final_one(mini presentation)/final_project/android/app/.cxx/Debug/5e72w2t2/x86/CMakeFiles/rebuild_cache.dir
